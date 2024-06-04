@@ -1,24 +1,41 @@
 package com.example.demo.service.impl;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.example.demo.dao.EmpRepository;
+import com.example.demo.model.Employee;
+import com.example.demo.service.EmpService;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.BasicQuery;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Service;
+import org.apache.commons.io.IOUtils;
 
-import com.example.demo.dao.EmpRepository;
-import com.example.demo.model.Employee;
-import com.example.demo.service.EmpService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ServiceImpl implements EmpService {
 
 	@Autowired
 	public EmpRepository repository;
+
+	@Autowired
+	private GridFsTemplate template;
+
+	@Autowired
+	private GridFsOperations operations;
 
 	//A method to register Employee
 	//It will first check is the email or id already exist. If yes , return message
@@ -38,6 +55,7 @@ public class ServiceImpl implements EmpService {
 		}
 
 	}
+
 
 	//A method to get all the employee info
 	@Override
@@ -129,5 +147,38 @@ public class ServiceImpl implements EmpService {
 		response.put("Total Number of employees", employeesPage.getTotalElements());
 		return response;
 	}
-	
+
+	/*
+	A new service for upload and download image
+	 */
+
+	//A method to allow user to upload file at MongoDB
+	public String addFile(MultipartFile upload) throws IOException {
+
+		DBObject metadata = new BasicDBObject();
+		metadata.put("fileSize", upload.getSize());
+
+		Object fileID = template.store(upload.getInputStream(), upload.getOriginalFilename(), upload.getContentType(), metadata);
+
+		return fileID.toString();
+	}
+
+	public Employee downloadFile(String id) throws IOException {
+
+		GridFSFile gridFSFile = template.findOne(new BasicQuery(String.valueOf(Criteria.where("_id").is(id))));
+
+		Employee employee = new Employee();
+
+		if (gridFSFile != null && gridFSFile.getMetadata() != null) {
+			employee.setFilename(gridFSFile.getFilename());
+			employee.setFileType(gridFSFile.getMetadata().get("_contentType").toString());
+			employee.setFileSize(gridFSFile.getMetadata().get("fileSize").toString());
+
+			// Assuming you have the 'operations' bean configured for GridFS
+			employee.setFile(IOUtils.toByteArray(operations.getResource(gridFSFile).getInputStream()));
+		}
+
+		return employee;
+	}
+
 }

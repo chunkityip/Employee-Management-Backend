@@ -28,6 +28,10 @@ public class Employee {
     private String email;
     private int experience;
     private String domain;
+    private String filename; // Name of the uploaded file
+    private String fileType; // Type of the file (e.g., image/png)
+    private String fileSize; // Size of the file (e.g., "16 MB")
+    private byte[] file; // Actual image data (byte array)
 	
 }
 
