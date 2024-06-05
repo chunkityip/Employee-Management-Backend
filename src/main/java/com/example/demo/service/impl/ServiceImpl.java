@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import io.github.pixee.security.Filenames;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -158,7 +159,7 @@ public class ServiceImpl implements EmpService {
 		DBObject metadata = new BasicDBObject();
 		metadata.put("fileSize", upload.getSize());
 
-		Object fileID = template.store(upload.getInputStream(), upload.getOriginalFilename(), upload.getContentType(), metadata);
+		Object fileID = template.store(upload.getInputStream(), Filenames.toSimpleFileName(upload.getOriginalFilename()), upload.getContentType(), metadata);
 
 		return fileID.toString();
 	}
