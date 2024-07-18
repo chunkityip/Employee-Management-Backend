@@ -56,7 +56,6 @@ public class ServiceImpl implements EmpService {
 			repository.save(emp);
 			return "Hi " + emp.getFirstname() + " your Registration process successfully completed";
 		}
-
 	}
 
 
