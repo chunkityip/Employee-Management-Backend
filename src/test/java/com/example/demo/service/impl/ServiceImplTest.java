@@ -2,15 +2,12 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dao.EmpRepository;
 import com.example.demo.model.Employee;
-import com.example.demo.service.EmpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.mongodb.gridfs.GridFsOperations;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -51,4 +48,45 @@ public class ServiceImplTest {
         verify(repository, never()).save(any(Employee.class));
     }
 
+    @Test
+    void testPostEmpIfIdAlreadyExists() {
+        when(repository.existsById(emp.getId())).thenReturn(true);
+
+        String result = service.postEmp(emp);
+
+        assertEquals("Employee with this id: 1 already exist", result);
+        verify(repository).existsById(emp.getId());
+
+        verify(repository).existsByEmail(anyString());
+        verify(repository, never()).save(any(Employee.class));
+    }
+
+    @Test
+    void testPostEmpSuccess() {
+        when(repository.existsByEmail(emp.getEmail())).thenReturn(false);
+        when(repository.existsById(emp.getId())).thenReturn(false);
+
+        String result = service.postEmp(emp);
+
+        assertEquals("Hi John your Registration process successfully completed", result);
+        verify(repository).existsByEmail(emp.getEmail());
+        verify(repository).existsById(emp.getId());
+        verify(repository).save(emp);
+    }
+
+    @Test
+    void testPostEmpIfNullValues() {
+        Employee nullEmp = new Employee();
+        nullEmp.setId(0);
+        nullEmp.setEmail(null);
+        nullEmp.setFirstname(null);
+
+        assertThrows(NullPointerException.class, () -> {
+            service.postEmp(nullEmp);
+        });
+
+        verify(repository, never()).existsByEmail(anyString());
+        verify(repository, never()).existsById(anyInt());
+        verify(repository, never()).save(any(Employee.class));
+    }
 }

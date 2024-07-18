@@ -42,6 +42,9 @@ public class ServiceImpl implements EmpService {
 	//If no , register as new employee
 	@Override
 	public String postEmp(Employee emp) {
+		if (emp == null || emp.getEmail() == null || emp.getFirstname() == null || emp.getId() == 0) {
+			throw new NullPointerException("Employee fields cannot be null");
+		}
 
 		if (repository.existsByEmail(emp.getEmail())) {
 			return "Employee with this mailid: " + emp.getEmail() + " already exist";
