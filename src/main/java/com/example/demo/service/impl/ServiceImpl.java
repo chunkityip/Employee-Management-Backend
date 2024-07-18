@@ -150,7 +150,7 @@ public class ServiceImpl implements EmpService {
 
 	/*
 	A new service for upload and download image
-	 */
+
 
 	//A method to allow user to upload file at MongoDB
 	public String addFile(MultipartFile upload) throws IOException {
@@ -180,5 +180,6 @@ public class ServiceImpl implements EmpService {
 
 		return employee;
 	}
+	 */
 
 }
