@@ -162,23 +162,4 @@ public class ServiceImpl implements EmpService {
 
 		return fileID.toString();
 	}
-
-	public Employee downloadFile(String id) throws IOException {
-
-		GridFSFile gridFSFile = template.findOne(new BasicQuery(String.valueOf(Criteria.where("_id").is(id))));
-
-		Employee employee = new Employee();
-
-		if (gridFSFile != null && gridFSFile.getMetadata() != null) {
-			employee.setFilename(gridFSFile.getFilename());
-			employee.setFileType(gridFSFile.getMetadata().get("_contentType").toString());
-			employee.setFileSize(gridFSFile.getMetadata().get("fileSize").toString());
-
-			// Assuming you have the 'operations' bean configured for GridFS
-			employee.setFile(IOUtils.toByteArray(operations.getResource(gridFSFile).getInputStream()));
-		}
-
-		return employee;
-	}
-
 }
