@@ -42,6 +42,9 @@ public class ServiceImpl implements EmpService {
 	//If no , register as new employee
 	@Override
 	public String postEmp(Employee emp) {
+		if (emp == null || emp.getEmail() == null || emp.getFirstname() == null || emp.getId() == 0) {
+			throw new NullPointerException("Employee fields cannot be null");
+		}
 
 		if (repository.existsByEmail(emp.getEmail())) {
 			return "Employee with this mailid: " + emp.getEmail() + " already exist";
@@ -53,7 +56,6 @@ public class ServiceImpl implements EmpService {
 			repository.save(emp);
 			return "Hi " + emp.getFirstname() + " your Registration process successfully completed";
 		}
-
 	}
 
 
@@ -162,6 +164,7 @@ public class ServiceImpl implements EmpService {
 
 		return fileID.toString();
 	}
+<<<<<<< HEAD
 
 	public Employee downloadFile(String id) throws IOException {
 
@@ -182,4 +185,6 @@ public class ServiceImpl implements EmpService {
 	}
 	 */
 
+=======
+>>>>>>> refs/remotes/origin/main
 }
