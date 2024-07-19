@@ -4,6 +4,7 @@ import com.example.demo.dao.EmpRepository;
 import com.example.demo.model.Employee;
 import com.example.demo.model.User;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -137,6 +138,7 @@ public class ServiceImplTest {
     }
 
     @Test
+    @DisplayName("This should pass since the email isn't exists")
     public void testGetByMailIfEmailNotExists() {
         Employee emp2 = new Employee();
         emp2.setEmail(null);
@@ -153,6 +155,7 @@ public class ServiceImplTest {
     }
 
     @Test
+    @DisplayName("This should pass since we delete user id successfully")
     public void testDeleteByHavingAId() {
         Employee emp2 = new Employee();
         emp2.setId(2);
@@ -174,6 +177,7 @@ public class ServiceImplTest {
     }
 
     @Test
+    @DisplayName("This should pass since it has correct id")
     public void testPutEmpIfWeHaveId() {
         Employee emp2 = new Employee();
         emp2.setId(2);
@@ -190,6 +194,7 @@ public class ServiceImplTest {
     }
 
     @Test
+    @DisplayName("This should pass since it didn't have any id")
     public void testPutEmpIfWeDontHaveId() {
         Employee emp2 = new Employee();
         emp2.setEmail("alex0917lfo@gmail.com");
@@ -206,7 +211,8 @@ public class ServiceImplTest {
 
 
     @Test
-    public void testValidateUser() {
+    @DisplayName("This should pass since the password is correct")
+    public void testValidateUserAsCorrectPassword() {
 
         when(repository.findByEmail(emp.getEmail())).thenReturn(emp);
 
@@ -216,7 +222,8 @@ public class ServiceImplTest {
     }
 
     @Test
-    void testValidateUser_IncorrectPassword() {
+    @DisplayName("This should pass since the password isn't correct")
+    void testValidateUserAsIncorrectPassword() {
         when(repository.findByEmail(emp.getEmail())).thenReturn(emp);
 
         Employee result = service.validateUser(emp.getEmail(), "wrongpassword");
@@ -226,7 +233,8 @@ public class ServiceImplTest {
     }
 
     @Test
-    void testValidateUser_UserNotFound() {
+    @DisplayName("This should pass since the user isn't init class")
+    void testValidateUserAsUserNotFound() {
         when(repository.findByEmail("nonexistent@example.com")).thenReturn(null);
 
         Employee result = service.validateUser("nonexistent@example.com", "password123");
